@@ -29,8 +29,22 @@ The root page (/)
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
 
-    # Hello World
-    $c->response->body( "Hello, World!!" );
+
+	if ($c->req->method eq 'POST'){
+	my $login_id = $c->req->param('login_id') || '';
+	my $login_password = $c->req->param('login_password') || '';
+	if($login_id && $login_password){
+		my $csh = Crypt::SaltedHash->new(algorithm => 'SHA-512');
+		$csh->add($login_password);
+		$c->model('DBIC::User')->create({
+			login_id => $login_id,
+			login_password => $csh->generate,
+			created_at => \'NOW()'
+		});
+		$c->res->body("ok, let's try <a href='/login'>login</a>"); $c->detach();
+	}else{ $c->res->body("ng"); $c->detach(); }
+	}
+
 }
 
 =head2 default
