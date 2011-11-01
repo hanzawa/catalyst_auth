@@ -3,7 +3,7 @@ package MyApp::View::TT;
 use strict;
 use warnings;
 
-use base 'Catalyst::View::TT';
+use base 'Catalyst::View::TT::ForceUTF8';
 
 __PACKAGE__->config(
     TEMPLATE_EXTENSION => '.tt',
