@@ -7,9 +7,10 @@ __PACKAGE__->config(
     schema_class => 'MyApp::Schema',
     
     connect_info => {
-        dsn => 'dbi:mysql:xxxxxx',
-        user => 'xxxxxxxxxx',
-        password => 'xxxxxxxxx',
+        dsn => 'dbi:mysql:[database]',
+        user => '[user_id]',
+        password => '[password]',
+	on_connect_do => ['SET NAMES utf8'],
     }
 );
 
