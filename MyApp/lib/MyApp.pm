@@ -21,6 +21,9 @@ use Catalyst qw/
     ConfigLoader
     Static::Simple
     +MyApp::Plugin::Utils
+    Session
+    Session::Store::FastMmap
+    Session::State::Cookie
 /;
 use Crypt::SaltedHash;
 
