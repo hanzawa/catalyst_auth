@@ -1,7 +1,6 @@
 package MyApp::Controller::Login;
 use Moose;
 use namespace::autoclean;
-use Crypt::SaltedHash;
 
 BEGIN {extends 'Catalyst::Controller'; }
 
@@ -25,18 +24,42 @@ Catalyst Controller.
 sub index :Path :Args(0) {
     my ( $self, $c ) = @_;
 
-	my $login_id = $c->req->param('login_id') || '';
-	my $login_password = $c->req->param('login_password') || '';
 
 	if ($c->req->method eq 'POST'){
-	if($login_id && $login_password){
-	my $password_hash = $c->model('DBIC::User')->search({
-			login_id => $login_id
-		})->get_column('login_password')->next;
-	if(Crypt::SaltedHash->validate($password_hash, $login_password)){
-	    $c->res->body("ok"); $c->detach();
-	}else{ $c->res->body("ng"); $c->detach(); }
-	}else{ $c->res->body("ng"); $c->detach(); }
+
+		$c->stash->{login}->{id} = $c->req->param('login_id');
+		$c->stash->{login}->{password} = $c->req->param('login_password');
+
+		$c->form(login_id => [qw/NOT_BLANK/], login_password => [qw/NOT_BLANK/] );
+		if ($c->form->has_error){
+			$c->stash->{template} = 'login/index.tt';
+			$c->detach();
+		}
+
+		my $userTBL;
+		if($c->stash->{login}->{id} =~ m/@/gis){
+			$userTBL = $c->model('DBIC::User')->search({
+				'user_email.email' => $c->stash->{login}->{id},
+			},{
+				prefetch => 'user_email',
+			})->next;
+		        # SELECT user.login_password FROM user_email me 
+			# INNER JOIN user user ON user.user_id = me.user_id WHERE ( email = ? )
+		}else{
+			$userTBL = $c->model('DBIC::User')->search({
+				login_id => $c->stash->{login}->{id},
+			})->next;
+		}
+		if(Crypt::SaltedHash->validate($userTBL->login_password, $c->stash->{login}->{password})){
+			$c->session->{root}->{last_name} = $userTBL->last_name;
+			$c->res->body("ok<br>".$c->session->{root}->{last_name}."さん！ようこそ"); $c->detach();
+		}else{
+			$c->stash->{error}->{login} = 1;
+			$c->stash->{template} = 'login/index.tt';
+			$c->detach();
+		}
+
+		
 	}
 
 }

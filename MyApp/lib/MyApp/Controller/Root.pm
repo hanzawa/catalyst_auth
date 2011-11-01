@@ -31,18 +31,76 @@ sub index :Path :Args(0) {
 
 
 	if ($c->req->method eq 'POST'){
-	my $login_id = $c->req->param('login_id') || '';
-	my $login_password = $c->req->param('login_password') || '';
-	if($login_id && $login_password){
-		my $csh = Crypt::SaltedHash->new(algorithm => 'SHA-512');
-		$csh->add($login_password);
-		$c->model('DBIC::User')->create({
-			login_id => $login_id,
+
+	$c->stash->{user}->{login_id} = $c->req->param('login_id') || '';
+	$c->stash->{user}->{login_password} = $c->req->param('login_password') || '';
+	$c->stash->{user}->{last_name} = $c->req->param('last_name') || '';
+	$c->stash->{user}->{email_pc} = $c->req->param('email_pc') || '';
+	$c->stash->{user}->{email_mb} = $c->req->param('email_mb') || '';
+
+	# -- validation --------------
+	$c->form(
+		login_id => [
+			qw/NOT_BLANK/,
+			['DBIC_UNIQUE', $c->model('DBIC::User'), 'login_id'],
+			['REGEX', qr/^[a-zA-Z0-9]{1,}$/],
+			[qw/LENGTH 4 16/]
+		],
+		login_password => [
+			qw/NOT_BLANK/,
+			['REGEX', qr/^[a-zA-Z0-9]{1,}$/],
+			[qw/LENGTH 8 32/]
+		],
+        	email_pc => [
+        		qw/NOT_BLANK EMAIL_LOOSE/,
+ 			['DBIC_UNIQUE', $c->model('DBIC::UserEmail'), 'email'],
+        	],
+        	email_mb => [
+        		qw/NOT_BLANK EMAIL_LOOSE/,
+ 			['DBIC_UNIQUE', $c->model('DBIC::UserEmail'), 'email'],
+ 		],
+        	last_name => [
+        		qw/NOT_BLANK/,
+ 		],
+	);
+
+	$c->stash->{error}->{same_email} = 1 if($c->stash->{user}->{email_pc} eq $c->stash->{user}->{email_mb});
+	if ($c->form->has_error || $c->stash->{error}->{same_email}){
+		$c->stash->{template} = 'index.tt';
+		$c->detach();
+	}
+
+	# -- 暗号化 ------------------
+	my $csh = Crypt::SaltedHash->new(algorithm => 'SHA-512');
+	$csh->add($c->stash->{user}->{login_password});
+
+	# -- DB_INSERT ------------------
+	my $txn = sub {
+
+	my $ls = $c->model('DBIC::User')->create({
+			last_name => $c->stash->{user}->{last_name},
+			login_id => $c->stash->{user}->{login_id},
 			login_password => $csh->generate,
 			created_at => \'NOW()'
-		});
-		$c->res->body("ok, let's try <a href='/login'>login</a>"); $c->detach();
-	}else{ $c->res->body("ng"); $c->detach(); }
+	});
+
+	$c->model('DBIC::UserEmail')->create({
+			user_id => $ls->id,
+			email => $c->stash->{user}->{email_pc},
+			flag => 1,
+	}) if $c->stash->{user}->{email_pc};
+
+	$c->model('DBIC::UserEmail')->create({
+			user_id => $ls->id,
+			email => $c->stash->{user}->{email_mb},
+			flag => 2,
+	}) if $c->stash->{user}->{email_mb};
+
+	};
+
+	my $re = $c->do_txn($c->model('DBIC'), $txn );
+	if($@){ $c->res->body("DB ERROR");$c->detach();}
+	$c->res->body("ok, let's try <a href='/login'>login</a>"); $c->detach();
 	}
 
 }
@@ -65,7 +123,13 @@ Attempt to render a view, if needed.
 
 =cut
 
-sub end : ActionClass('RenderView') {}
+sub render : ActionClass('RenderView'){}
+
+sub end : Private{
+    my ( $self, $c ) = @_;
+    $c->forward('render');
+    $c->res->headers->content_type('text/html; charset=utf-8');
+}
 
 =head1 AUTHOR
 

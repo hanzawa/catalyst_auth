@@ -16,6 +16,8 @@ user:
     NOT_BLANK: "携帯メールアドレスが未入力です。"
     EMAIL_LOOSE: "携帯メールアドレスの形式が正しくありません。"
     DBIC_UNIQUE: "携帯メールアドレスが既に登録されております。"
+  last_name:
+    NOT_BLANK: "名前が未入力です。"
 login:
   login_id:
     NOT_BLANK: "ログインIDが未入力です。"
