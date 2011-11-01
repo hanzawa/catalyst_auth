@@ -20,7 +20,9 @@ use Catalyst qw/
     -Debug
     ConfigLoader
     Static::Simple
+    +MyApp::Plugin::Utils
 /;
+use Crypt::SaltedHash;
 
 extends 'Catalyst';
 
