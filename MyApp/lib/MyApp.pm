@@ -22,6 +22,8 @@ use Catalyst qw/
     Static::Simple
     FormValidator::Simple
     +MyApp::Plugin::Utils
+    Unicode
+
     Session
     Session::Store::FastMmap
     Session::State::Cookie
