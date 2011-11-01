@@ -1,0 +1,23 @@
+user:
+  login_id:
+    NOT_BLANK: "ログインIDが未入力です。"
+    DBIC_UNIQUE: "ログインIDが既に登録されております。"
+    REGEX: "ログインIDを半角英数字で入力してください。"
+    LENGTH: "ログインIDを4〜16文字で入力してください。"
+  login_password:
+    NOT_BLANK: "パスワードが未入力です。"
+    REGEX: "パスワードを半角英数字で入力してください。"
+    LENGTH: "パスワードを8〜32文字で入力してください。"
+  email_pc:
+    NOT_BLANK: "PCメールアドレスが未入力です。"
+    EMAIL_LOOSE: "PCメールアドレスの形式が正しくありません。"
+    DBIC_UNIQUE: "PCメールアドレスが既に登録されております。"
+  email_mb:
+    NOT_BLANK: "携帯メールアドレスが未入力です。"
+    EMAIL_LOOSE: "携帯メールアドレスの形式が正しくありません。"
+    DBIC_UNIQUE: "携帯メールアドレスが既に登録されております。"
+login:
+  login_id:
+    NOT_BLANK: "ログインIDが未入力です。"
+  login_password:
+    NOT_BLANK: "パスワードが未入力です。"

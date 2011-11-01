@@ -20,6 +20,7 @@ use Catalyst qw/
     -Debug
     ConfigLoader
     Static::Simple
+    FormValidator::Simple
     +MyApp::Plugin::Utils
     Session
     Session::Store::FastMmap
@@ -42,6 +43,16 @@ our $VERSION = '0.01';
 
 __PACKAGE__->config(
     name => 'MyApp',
+    validator => {
+	plugins => [qw/DBIC::Unique/],
+	options => {
+		charset => 'utf-8',
+		datetime_class => 'DateTime',
+		time_zone      => 'Asia/Tokyo',
+	},
+	messages => 'config/messages.yml',
+	message_format => '<p>%s</p>'
+    },
     # Disable deprecated behavior needed by old applications
     disable_component_resolution_regex_fallback => 1,
 );
