@@ -1,9 +1,28 @@
-Run script/myapp_server.pl to test the application.
+動作確認手順
 
-CREATE TABLE `auth`.`user` (
-`user_id` INT NOT NULL AUTO_INCREMENT ,
-`login_id` VARCHAR( 255 ) NOT NULL ,
-`login_password` VARCHAR( 255 ) NOT NULL ,
-`created_at` DATETIME NOT NULL ,
-PRIMARY KEY ( `user_id` )
-) ENGINE = InnoDB;
+▼step1
+dump.sql を任意のデータベースで実行
+
+▼step2
+DBIC.pm を作成
+
+% cp lib/MyApp/Model/DBIC.pm.sample lib/MyApp/Model/DBIC.pm
+% vi lib/MyApp/Model/DBIC.pm
+
+[databese,user_id,password]を編集
+
+
+▼step3
+ブラウザで動作確認
+
+% script/myapp_server.pl
+
+http://localhost:3000/ 
+にアクセスし、会員登録。
+
+登録完了画面のリンクをクリックして、
+ログイン画面へ。
+
+先に登録したID・Passwordでログイン。
+登録した名前が表示されれば成功。
+
