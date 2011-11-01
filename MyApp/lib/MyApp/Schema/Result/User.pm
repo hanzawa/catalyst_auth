@@ -41,6 +41,12 @@ __PACKAGE__->table("user");
   is_nullable: 0
   size: 255
 
+=head2 last_name
+
+  data_type: 'varchar'
+  is_nullable: 0
+  size: 255
+
 =head2 created_at
 
   data_type: 'datetime'
@@ -56,6 +62,8 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 0, size => 255 },
   "login_password",
   { data_type => "varchar", is_nullable => 0, size => 255 },
+  "last_name",
+  { data_type => "varchar", is_nullable => 0, size => 255 },
   "created_at",
   {
     data_type => "datetime",
@@ -64,11 +72,13 @@ __PACKAGE__->add_columns(
   },
 );
 __PACKAGE__->set_primary_key("user_id");
+__PACKAGE__->add_unique_constraint("login_id", ["login_id"]);
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-10-31 20:47:59
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:0gSDZWjYK4M/XRZPfaVOhQ
+# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-11-01 20:48:46
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:o9jFCI+wdiCNZgeA6pZ/Ag
 
+__PACKAGE__->has_many('user_email' => 'MyApp::Schema::Result::UserEmail', 'user_id');
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 __PACKAGE__->meta->make_immutable;
