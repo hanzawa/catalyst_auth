@@ -23,7 +23,6 @@ use Catalyst qw/
     FormValidator::Simple
     +MyApp::Plugin::Utils
     Unicode
-
     Session
     Session::Store::FastMmap
     Session::State::Cookie
