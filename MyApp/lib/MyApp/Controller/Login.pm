@@ -50,7 +50,12 @@ sub index :Path :Args(0) {
 				login_id => $c->stash->{login}->{id},
 			})->next;
 		}
-		if(Crypt::SaltedHash->validate($userTBL->login_password, $c->stash->{login}->{password})){
+
+		my $result;
+		eval{ $result = Crypt::SaltedHash->validate($userTBL->login_password, $c->stash->{login}->{password});};
+			
+			
+		if($result){
 			$c->session->{root}->{last_name} = $userTBL->last_name;
 			$c->res->body("ok<br>".$c->session->{root}->{last_name}."さん！ようこそ"); $c->detach();
 		}else{

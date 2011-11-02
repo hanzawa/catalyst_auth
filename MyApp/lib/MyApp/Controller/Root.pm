@@ -64,7 +64,10 @@ sub index :Path :Args(0) {
  		],
 	);
 
-	$c->stash->{error}->{same_email} = 1 if($c->stash->{user}->{email_pc} eq $c->stash->{user}->{email_mb});
+	$c->stash->{error}->{same_email} = 1 if( $c->stash->{user}->{email_pc}
+		&& $c->stash->{user}->{email_mb}
+		&& ($c->stash->{user}->{email_pc} eq $c->stash->{user}->{email_mb}));
+
 	if ($c->form->has_error || $c->stash->{error}->{same_email}){
 		$c->stash->{template} = 'index.tt';
 		$c->detach();
