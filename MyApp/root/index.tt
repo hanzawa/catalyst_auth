@@ -7,19 +7,19 @@
 [% END %]
 
 <form method="post" action="/">
-<p><label for="login_id">ログインID</label>
+<p[% IF c.form.error('login_id') %] style="color:red;"[% END %]><label for="login_id">ログインID</label>
 <input type="text" name="login_id" id="login_id" value="[% user.login_id %]" /></p>
 
-<p><label for="login_password">パスワード</label>
+<p[% IF c.form.error('login_password') %] style="color:red;"[% END %]><label for="login_password">パスワード</label>
 <input type="password" name="login_password" id="login_password" value="[% user.login_password %]" /></p>
 
-<p><label for="last_name">名前</label>
+<p[% IF c.form.error('last_name') %] style="color:red;"[% END %]><label for="last_name">名前</label>
 <input type="text" name="last_name" id="last_name" value="[% user.last_name %]" /></p>
 
-<p><label for="email_pc">Email PC</label>
+<p[% IF c.form.error('email_pc') || error.same_email %] style="color:red;"[% END %]><label for="email_pc">Email PC</label>
 <input type="text" name="email_pc" id="email_pc" value="[% user.email_pc %]" /></p>
 
-<p><label for="email_mb">Email MB</label>
+<p[% IF c.form.error('email_mb') || error.same_email %] style="color:red;"[% END %]><label for="email_mb">Email MB</label>
 <input type="text" name="email_mb" id="email_mb" value="[% user.email_mb %]" /></p>
 
 <p><input type="submit" value="登録" /></p>
